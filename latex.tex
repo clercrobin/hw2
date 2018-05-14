@@ -1,0 +1,45 @@
+\documentclass[10pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{lmodern}
+\usepackage{pgf,tikz}
+\usepackage{algorithm}
+\usepackage{algorithmic}
+\usepackage{dsfont}
+
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}{Lemma}
+\newtheorem{corollary}{Corollary}
+
+\title{Homework 2}
+\author{Robien \textsc{Clerc} -- Pierre \textsc{Vigier}}
+
+\begin{document}
+
+\maketitle
+
+\section{Randomized analysis}
+
+\textbf{1a} Each vertex is removed with probability $1 - \frac{1}{d}$, thus remains with probability $\frac{1}{d}$
+
+Let $V^*$ the number of remaining vertices we have immediately $\mathbb{E}(V^*) = \frac{n}{d}$
+
+Let $E^*$ the number of remaining edges. An edge remains if and only if the two vertices it connects remain.
+
+Thus we have $\mathbb{E}(E^*) = \frac{n \times d}{2} \times \frac{1}{d^2} = \frac{n}{2d}$
+
+\textbf{2a} Let us consider the graph composed of the remaining vertices and edges from the previous question. It is composed in expectation of $\frac{n}{d}$ vertices and $\frac{n}{2d}$ edges.
+
+We can remove all the remaining edges by removing only one of its two vertices. In expectation there are $\mathbb{E}(V^* - E^*) = \frac{n}{d} - \frac{n}{2d} = \frac{n}{2d}$ vertices remaining and no edges between them : this is an independent set.
+
+There is at least one of those subsets with a value at least the expectation. It proves that G contains an independent set of size $\frac{n}{2d}$
+
+
+
+
+\end{document}
