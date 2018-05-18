@@ -10,6 +10,7 @@
 \usepackage{algorithm}
 \usepackage{algorithmic}
 \usepackage{dsfont}
+\usepackage{gensymb}
 
 \theoremstyle{plain}
 \newtheorem{theorem}{Theorem}
@@ -27,19 +28,93 @@
 
 \textbf{1a} Each vertex is removed with probability $1 - \frac{1}{d}$, thus remains with probability $\frac{1}{d}$
 
-Let $V^*$ the number of remaining vertices we have immediately $\mathbb{E}(V^*) = \frac{n}{d}$
+Let us define for each $V$ :
+$$
+h_{V}(p) = \left\{\begin{array}{ll}
+1 & \text{ if } p < \frac{1}{d} \\
+0 & \text{ otherwise}
+\end{array}\right.
+$$
 
-Let $E^*$ the number of remaining edges. An edge remains if and only if the two vertices it connects remain.
+Let $N_V$ the number of remaining vertices we have immediately $\mathbb{E}(N_V) = \sum_{V=1}^{n} {\mathbb{E}_{p \sim \mathcal{U}[0, 1]}(h_{V})} = n \times {\mathbb{E}_{p \sim \mathcal{U}[0, 1]}(h_{V})} = \frac{n}{d}$
 
-Thus we have $\mathbb{E}(E^*) = \frac{n \times d}{2} \times \frac{1}{d^2} = \frac{n}{2d}$
+Let $N_E$ the number of remaining edges. An edge remains if and only if the two vertices it connects remain.
+
+For each $E$ linked to the two edges $V_1$ and $V_2$ we thus have by independance: 
+
+$\mathbb{E}(h_E) = \mathbb{E}(h_{V_1}) * \mathbb{E}(h_{V_2}) =\frac{1}{d^2} $
+
+Thus we have $\mathbb{E}(N_E) = \frac{n \times d}{2} \times \mathbb{E}(h_E) =\frac{n \times d}{2} \times \frac{1}{d^2} =  \frac{n}{2d}$
 
 \textbf{2a} Let us consider the graph composed of the remaining vertices and edges from the previous question. It is composed in expectation of $\frac{n}{d}$ vertices and $\frac{n}{2d}$ edges.
 
-We can remove all the remaining edges by removing only one of its two vertices. In expectation there are $\mathbb{E}(V^* - E^*) = \frac{n}{d} - \frac{n}{2d} = \frac{n}{2d}$ vertices remaining and no edges between them : this is an independent set.
+We can remove all the remaining edges by removing only one of its two vertices. In expectation there are $\mathbb{E}(N_V - N_E) = \frac{n}{d} - \frac{n}{2d} = \frac{n}{2d}$ vertices remaining and no edges between them : this is an independent set.
 
 There is at least one of those subsets with a value at least the expectation. It proves that G contains an independent set of size $\frac{n}{2d}$
 
+\section{Locality Sensitive Hashing}
 
+\textbf{2a} We suppose that the points are in $\mathbb{R}^2$ and that $\arg(p)$ is the angle in degrees of a point with respect to the $x$ axis.
 
+Let us define sets of angles of width $\alpha$ and offset $\theta$: $S_{\theta} = \{ \theta + \phi \mod 360, \phi \in [0, \alpha[ \}$.
+
+Let us define functions $h_{\theta}$ such that:
+
+$$
+h_{\theta}(p) = \left\{\begin{array}{ll}
+1 & \text{ if } \arg(p) \in S_{\theta} \\
+0 & \text{ otherwise}
+\end{array}\right.
+$$
+
+Let $\mathcal{H}$ be the family generated when $\Theta \sim \mathcal{U}([0, 360[)$
+
+\textbf{2b} First let us find a lower bound on $Pr(h(p) = h(q))$ when $d(p, q) \leq 1\degree$.
+
+\begin{alignat*}{2}
+Pr(h(p) \neq h(q)) & = Pr(\{h(p) = 1, h(q) = 0\} \cup \{h(p) = 0, h(q) = 1\}) \\
+& = Pr(h(p) = 1, h(q) = 0) + Pr(h(p) = 0, h(q) = 1) \\
+& = 2 \times Pr(h(p) = 1, h(q) = 0) \\
+\end{alignat*}
+
+We have that $Pr(h(p) = 1) = \frac{\alpha}{360}$. Moreover $Pr(h(q) = 0 | h(p) = 1) = \frac{d(p, q)}{\alpha} \leq \frac{1}{\alpha}$. So:
+
+$$
+Pr(h(p) = 1, h(q) = 0) = Pr(h(p) = 1)Pr(h(q) = 0 | h(p) = 1)\leq \frac{1}{360}
+$$
+
+Finally, we have that:
+
+$$
+Pr(h(p) = h(q)) = 1 - Pr(h(p) \neq h(q)) \geq 1 - \frac{2}{360} \geq 0.99
+$$
+
+\textbf{2c} Now let us find an upper bound on $Pr(h(p) = h(q))$ when $d(p, q) \geq 10\degree$.
+
+\begin{alignat*}{2}
+Pr(h(p) = h(q)) & = Pr(\{h(p) = 0, h(q) = 0\} \cup \{h(p) = 1, h(q) = 1\}) \\
+& = Pr(h(p) = 0, h(q) = 0) + Pr(h(p) = 1, h(q) = 1)
+\end{alignat*}
+
+If $\alpha \leq 10$:
+
+\begin{alignat*}{2}
+Pr(h(p) = 0, h(q) = 0) & = Pr(\Theta \not \in ]\arg(p)-\alpha, \arg(p)] \cup ]\arg(q)-\alpha, \arg(q)]) \\
+& = 1 - Pr(\Theta \in ]\arg(p)-\alpha, \arg(p)] \cup ]\arg(q)-\alpha, \arg(q)]) \\
+& = 1 - (Pr(\Theta \in ]\arg(p)-\alpha, \arg(p)]) + Pr(\Theta_i \in ]\arg(q)-\alpha, \arg(q)])) \\
+& = 1 - \frac{2\alpha}{360}
+\end{alignat*}
+
+Then, let us remark that $Pr(h(p) = 1, h(q) = 1)) = 0$ when $\alpha \leq 10$.
+
+Hence:
+
+$$
+Pr(h(p) = h(q)) \leq 1 - \frac{2\alpha}{360}
+$$
+
+\textbf{2d} To conclude we have to find $\alpha \leq 10$ such that $1 - \frac{2\alpha}{360} \leq 0.95$.
+
+If we take $\alpha = 10\degree$ then $1 - \frac{2\alpha}{360} \approx 0.944$.
 
 \end{document}
