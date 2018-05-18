@@ -10,6 +10,7 @@
 \usepackage{algorithm}
 \usepackage{algorithmic}
 \usepackage{dsfont}
+\usepackage{gensymb}
 
 \theoremstyle{plain}
 \newtheorem{theorem}{Theorem}
@@ -39,7 +40,125 @@ We can remove all the remaining edges by removing only one of its two vertices. 
 
 There is at least one of those subsets with a value at least the expectation. It proves that G contains an independent set of size $\frac{n}{2d}$
 
+\section{Locality Sensitive Hashing}
 
+\textbf{2a} We suppose that the points are in $\mathbb{R}^2$ and that $\arg(p)$ is the angle in degrees of a point with respect to the $x$ axis.
 
+Let us define sets of angles of width $\alpha$ and offset $\theta$: $S_{\theta} = \{ \theta + \phi \mod 360, \phi \in [0, \alpha[ \}$.
+
+Let us define functions $h_{\theta}$ such that:
+
+$$
+h_{\theta}(p) = \left\{\begin{array}{ll}
+1 & \text{ if } \arg(p) \in S_{\theta} \\
+0 & \text{ otherwise}
+\end{array}\right.
+$$
+
+Then let $\Theta_1, ..., \Theta_k \overset{\text{i.i.d.}}{\sim} \mathcal{U}([0, 360[)$, we finally define $h$ such that:
+
+$$
+h(p) = \underset{i \in \{1, ..., k\}}{\max}{h_{\Theta_i}(p)}
+$$
+
+\textbf{2b} First let us find a lower bound on $Pr(h(p) = h(q))$ when $d(p, q) \leq 1\degree$.
+
+\begin{alignat*}{2}
+Pr(h(p) \neq h(q)) & = Pr(\{h(p) = 1, h(q) = 0\} \cup \{h(p) = 0, h(q) = 1\}) \\
+& = Pr(h(p) = 1, h(q) = 0) + Pr(h(p) = 0, h(q) = 1) \\
+& = 2 \times Pr(h(p) = 1, h(q) = 0) \\
+& = 2 \times Pr(h(p) = 1) \times Pr(h(q) = 0 | h(p) = 1)
+\end{alignat*}
+
+We have that $Pr(h_{\theta_i}(p) = 0) = 1 - \frac{\alpha}{360}$ for all $i$ so:
+
+\begin{alignat*}{2}
+Pr(h(p) = 1) & = 1 - Pr(h(p) = 0) \\
+& = 1 - Pr(\underset{i \in \{1, ..., k\}}{\max}{h_{\Theta_i}(p)} = 0) \\
+& = 1 - Pr(\forall i \in \{1, ..., k\}, h_{\Theta_i}(p) = 0) \\
+& = 1 - \prod_{i=1}^k{Pr(h_{\Theta_i}(p) = 0)} \\
+& = 1 - \left(1 - \frac{\alpha}{360}\right)^k
+\end{alignat*}
+
+Then if $\alpha \geq 1$ then:
+\begin{itemize}
+\item $Pr(h_{\theta_i}(q) = 0 | h_{\theta_i}(p) = 1) = \frac{\alpha - d(p, q)}{360} \leq \frac{\alpha}{360}$
+\item $Pr(h_{\theta_i}(q) = 0 | h_{\theta_i}(p) = 0) = 1 - \frac{d(p, q)}{360} \leq 1$
+\end{itemize}
+
+So:
+
+\begin{alignat*}{2}
+Pr(h(q) = 0 | h(p) = 1) & = Pr(\forall i \in \{1, ..., k\}, h_{\Theta_i}(q) = 0 | \forall i \in \{1, ..., k\}, h_{\Theta_i}(p)) \\
+& = \prod_{i=1}^k{Pr(h_{\Theta_i}(q) = 0 | h_{\Theta_i}(p))} \\
+& \leq Pr(h_{\Theta_1}(q) = 0 | h_{\Theta_1}(p) = 1)^{|\{i, h_{\Theta_i}(p) = 1\}|} \\
+& \leq Pr(h_{\Theta_1}(q) = 0 | h_{\Theta_1}(p) = 1) \\
+& = \frac{\alpha}{360}
+\end{alignat*}
+
+Finally, we have that:
+
+$$
+Pr(h(p) = h(q)) = 1 - Pr(h(p) \neq h(q)) \geq 1 - \frac{\alpha}{360}\left(1 - \left(1 - \frac{\alpha}{360}\right)^k\right)
+$$
+
+\textbf{2c} Now let us find an upper bound on $Pr(h(p) = h(q))$ when $d(p, q) \geq 10\degree$.
+
+\begin{alignat*}{2}
+Pr(h(p) = h(q)) & = Pr(\{h(p) = 0, h(q) = 0\} \cup \{h(p) = 1, h(q) = 1\}) \\
+& = Pr(h(p) = 0, h(q) = 0) + Pr(h(p) = 1, h(q) = 1)
+\end{alignat*}
+
+If $\alpha \leq 10$:
+
+\begin{alignat*}{2}
+Pr(h_{\Theta_i}(p) = 0, h_{\Theta_i}(q) = 0) & = Pr(\Theta_i \not \in ]\arg(p)-\alpha, \arg(p)] \cup ]\arg(q)-\alpha, \arg(q)]) \\
+& = 1 - Pr(\Theta_i \in ]\arg(p)-\alpha, \arg(p)] \cup ]\arg(q)-\alpha, \arg(q)]) \\
+& = 1 - (Pr(\Theta_i \in ]\arg(p)-\alpha, \arg(p)]) + Pr(\Theta_i \in ]\arg(q)-\alpha, \arg(q)])) \\
+& = 1 - \frac{2\alpha}{360}
+\end{alignat*}
+
+So:
+
+\begin{alignat*}{2}
+Pr(h(p) = 0, h(q) = 0) & = Pr(\forall i \in \{1, ..., k\}, h_{\Theta_i}(p) = 0, h_{\Theta_i}(q) = 0) \\
+& = \prod_{i=1}^k{Pr(h_{\Theta_i}(p) = 0, h_{\Theta_i}(q) = 0)} \\
+& = \left(1 - \frac{2\alpha}{360}\right)^k
+\end{alignat*}
+
+Let us remark that $Pr(h_{\Theta_i}(p) = 1, h_{\Theta_i}(q) = 1)) = 0$ when $\alpha \leq 10$. Thus:
+
+\begin{alignat*}{2}
+Pr(h(p) = 1, h(q) = 1) & = Pr(\exists i \neq j \in \{1, ..., k\}, h_{\Theta_i}(p) = 1, h_{\Theta_j}(q) = 1) \\
+& = \sum_{A \subsetneq \{1, ..., k\}, A \neq \emptyset}{Pr(\forall i \in A, h_{\Theta_i}(p) = 1, \exists j \not \in A, h_{\Theta_j}(q) = 1)} \\
+& = \sum_{A \subsetneq \{1, ..., k\}, A \neq \emptyset}{Pr(\forall i \in A, h_{\Theta_i}(p) = 1)Pr(\exists j \not \in A, h_{\Theta_j}(q) = 1)} \\
+& = \sum_{A \subsetneq \{1, ..., k\}, A \neq \emptyset}{\left(\frac{\alpha}{360}\right)^{|A|}(1 - Pr(\forall j \not \in A, h_{\Theta_j}(q) = 0))} \\
+& = \sum_{A \subsetneq \{1, ..., k\}, A \neq \emptyset}{\left(\frac{\alpha}{360}\right)^{|A|}\left(1 - \left(1 - \frac{\alpha}{360}\right)^{k-|A|}\right)} \\
+& = \sum_{l = 1}^{k-1}{{k \choose l}\left(\frac{\alpha}{360}\right)^{l}\left(1 - \left(1 - \frac{\alpha}{360}\right)^{k-l}\right)} \\
+& \leq \sum_{l = 0}^{k}{{k \choose l}\left(\frac{\alpha}{360}\right)^{l}\left(1 - \left(1 - \frac{\alpha}{360}\right)^{k-l}\right)} \\
+& = \sum_{l = 0}^{k}{{k \choose l}\left(\frac{\alpha}{360}\right)^{l}} - \sum_{l = 0}^{k}{{k \choose l}\left(\frac{\alpha}{360}\right)^{l}\left(1 - \frac{\alpha}{360}\right)^{k-l}} \\
+& = \left(1 + \frac{\alpha}{360}\right)^{k} - 1
+\end{alignat*}
+
+Hence:
+
+$$Pr(h(p) = h(q)) \leq \left(1 - \frac{2\alpha}{360}\right)^k + \left(1 + \frac{\alpha}{360}\right)^{k} - 1
+$$
+
+\textbf{2d} To sum up, we have shown that:
+
+\begin{alignat*}{3}
+Pr(h(p) = h(q)) & \geq 1 - \frac{\alpha}{360}\left(1 - \left(1 - \frac{\alpha}{360}\right)^k\right) & \text{ when } d(p, q) \leq 1\degree \\
+Pr(h(p) = h(q)) & \leq \left(1 - \frac{2\alpha}{360}\right)^k + \left(1 + \frac{\alpha}{360}\right)^{k} -  1 & \text{ when } d(p, q) \geq 10\degree \\
+\end{alignat*}
+
+To conclude we have to find $\alpha \in [0, 10]$ and $k \geq 1$ such that $Pr(h(p) = h(q)) \geq 0.99$ and $Pr(h(p) = h(q)) \leq 0.95$.
+
+If we take $\alpha = 10\degree$ and $k = 10$, we have that:
+
+\begin{alignat*}{1}
+1 - \frac{\alpha}{360}\left(1 - \left(1 - \frac{\alpha}{360}\right)^k\right) \approx 0.993 \\
+\left(1 - \frac{2\alpha}{360}\right)^k + \left(1 + \frac{\alpha}{360}\right)^{k} -  1 \approx 0.880 \\
+\end{alignat*}
 
 \end{document}
