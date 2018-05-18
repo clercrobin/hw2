@@ -1,6 +1,5 @@
 import numpy as np
 
-k = 3
 alpha = 10
 N = 1000000
 
@@ -9,10 +8,8 @@ def h(p, thetas):
     return (d <= alpha).astype(int)
     
 def estimate_proba(p, q):
-    thetas = np.random.rand(N, k) * 360
-    h_p = np.max(h(p, thetas), 1)
-    h_q = np.max(h(q, thetas), 1)
-    return (h_p == h_q).mean()
+    thetas = np.random.rand(N) * 360
+    return (h(p, thetas) == h(q, thetas)).mean()
 
 # p1
 p = np.random.rand() * 360
