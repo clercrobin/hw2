@@ -67,39 +67,31 @@ $$
 Pr(h(p) \neq h(q)) & = Pr(\{h(p) = 1, h(q) = 0\} \cup \{h(p) = 0, h(q) = 1\}) \\
 & = Pr(h(p) = 1, h(q) = 0) + Pr(h(p) = 0, h(q) = 1) \\
 & = 2 \times Pr(h(p) = 1, h(q) = 0) \\
-& = 2 \times Pr(h(p) = 1) \times Pr(h(q) = 0 | h(p) = 1)
 \end{alignat*}
 
-We have that $Pr(h_{\theta_i}(p) = 0) = 1 - \frac{\alpha}{360}$ for all $i$ so:
+We have that $Pr(h_{\Theta_i}(p) = 1) = \frac{\alpha}{360}$ for all $i$. Moreover:
 
-\begin{alignat*}{2}
-Pr(h(p) = 1) & = 1 - Pr(h(p) = 0) \\
-& = 1 - Pr(\underset{i \in \{1, ..., k\}}{\max}{h_{\Theta_i}(p)} = 0) \\
-& = 1 - Pr(\forall i \in \{1, ..., k\}, h_{\Theta_i}(p) = 0) \\
-& = 1 - \prod_{i=1}^k{Pr(h_{\Theta_i}(p) = 0)} \\
-& = 1 - \left(1 - \frac{\alpha}{360}\right)^k
-\end{alignat*}
-
-Then if $\alpha \geq 1$ then:
-\begin{itemize}
-\item $Pr(h_{\theta_i}(q) = 0 | h_{\theta_i}(p) = 1) = \frac{\alpha - d(p, q)}{360} \leq \frac{\alpha}{360}$
-\item $Pr(h_{\theta_i}(q) = 0 | h_{\theta_i}(p) = 0) = 1 - \frac{d(p, q)}{360} \leq 1$
-\end{itemize}
+$$
+Pr(h_{\Theta_i}(q) = 0 | h_{\Theta_i}(p) = 1) = \frac{d(p, q)}{\alpha} \leq \frac{1}{\alpha}
+$$
 
 So:
 
 \begin{alignat*}{2}
-Pr(h(q) = 0 | h(p) = 1) & = Pr(\forall i \in \{1, ..., k\}, h_{\Theta_i}(q) = 0 | \forall i \in \{1, ..., k\}, h_{\Theta_i}(p)) \\
-& = \prod_{i=1}^k{Pr(h_{\Theta_i}(q) = 0 | h_{\Theta_i}(p))} \\
-& \leq Pr(h_{\Theta_1}(q) = 0 | h_{\Theta_1}(p) = 1)^{|\{i, h_{\Theta_i}(p) = 1\}|} \\
-& \leq Pr(h_{\Theta_1}(q) = 0 | h_{\Theta_1}(p) = 1) \\
-& = \frac{\alpha}{360}
+Pr(h(p) = 1, h(q) = 0) & = Pr(\exists i \in \{1, ..., k\}, h_{\Theta_i}(p) = 1, \forall j \in \{1, ..., k\} h_{\Theta_j}(q) = 0) \\
+& = \sum_{A \subset \{1, ..., k\}, A \neq \emptyset}{Pr(\forall i \in \{1, ..., k\}, h_{\Theta_i}(p) = \mathds{1}_{i \in A}, h_{\Theta_i}(q) = 0)} \\
+& = \sum_{A \subset \{1, ..., k\}, A \neq \emptyset}{\prod_{i = 1}^k{Pr(h_{\Theta_i}(p) = \mathds{1}_{i \in A}, h_{\Theta_i}(q) = 0)}} \\
+& = \sum_{A \subset \{1, ..., k\}, A \neq \emptyset}{\prod_{i = 1}^k{Pr(h_{\Theta_i}(p) = \mathds{1}_{i \in A})Pr(h_{\Theta_i}(q) = 0 | h_{\Theta_i}(p) = \mathds{1}_{i \in A})}} \\
+& \leq \sum_{A \subset \{1, ..., k\}, A \neq \emptyset}{\prod_{i \in A}{Pr(h_{\Theta_i}(p) = 1)Pr(h_{\Theta_i}(q) = 0 | h_{\Theta_i}(p) = 1)}} \\
+& = \sum_{A \subset \{1, ..., k\}, A \neq \emptyset}{\left(\frac{\alpha}{360}\frac{1}{\alpha}\right)^{|A|}} \\
+& = \sum_{A \subset \{1, ..., k\}, A \neq \emptyset}{\left(\frac{1}{360}\right)^{|A|}} \\
+& = \left(1 + \frac{1}{360}\right)^k - 1
 \end{alignat*}
 
 Finally, we have that:
 
 $$
-Pr(h(p) = h(q)) = 1 - Pr(h(p) \neq h(q)) \geq 1 - \frac{\alpha}{360}\left(1 - \left(1 - \frac{\alpha}{360}\right)^k\right)
+Pr(h(p) = h(q)) = 1 - Pr(h(p) \neq h(q)) \geq 2 - \left(1 + \frac{1}{360}\right)^k
 $$
 
 \textbf{2c} Now let us find an upper bound on $Pr(h(p) = h(q))$ when $d(p, q) \geq 10\degree$.
@@ -130,13 +122,12 @@ Let us remark that $Pr(h_{\Theta_i}(p) = 1, h_{\Theta_i}(q) = 1)) = 0$ when $\al
 
 \begin{alignat*}{2}
 Pr(h(p) = 1, h(q) = 1) & = Pr(\exists i \neq j \in \{1, ..., k\}, h_{\Theta_i}(p) = 1, h_{\Theta_j}(q) = 1) \\
-& = \sum_{A \subsetneq \{1, ..., k\}, A \neq \emptyset}{Pr(\forall i \in A, h_{\Theta_i}(p) = 1, \exists j \not \in A, h_{\Theta_j}(q) = 1)} \\
+& \leq \sum_{A \subsetneq \{1, ..., k\}, A \neq \emptyset}{Pr(\forall i \in A, h_{\Theta_i}(p) = 1, \exists j \not \in A, h_{\Theta_j}(q) = 1)} \\
 & = \sum_{A \subsetneq \{1, ..., k\}, A \neq \emptyset}{Pr(\forall i \in A, h_{\Theta_i}(p) = 1)Pr(\exists j \not \in A, h_{\Theta_j}(q) = 1)} \\
 & = \sum_{A \subsetneq \{1, ..., k\}, A \neq \emptyset}{\left(\frac{\alpha}{360}\right)^{|A|}(1 - Pr(\forall j \not \in A, h_{\Theta_j}(q) = 0))} \\
 & = \sum_{A \subsetneq \{1, ..., k\}, A \neq \emptyset}{\left(\frac{\alpha}{360}\right)^{|A|}\left(1 - \left(1 - \frac{\alpha}{360}\right)^{k-|A|}\right)} \\
-& = \sum_{l = 1}^{k-1}{{k \choose l}\left(\frac{\alpha}{360}\right)^{l}\left(1 - \left(1 - \frac{\alpha}{360}\right)^{k-l}\right)} \\
-& \leq \sum_{l = 0}^{k}{{k \choose l}\left(\frac{\alpha}{360}\right)^{l}\left(1 - \left(1 - \frac{\alpha}{360}\right)^{k-l}\right)} \\
-& = \sum_{l = 0}^{k}{{k \choose l}\left(\frac{\alpha}{360}\right)^{l}} - \sum_{l = 0}^{k}{{k \choose l}\left(\frac{\alpha}{360}\right)^{l}\left(1 - \frac{\alpha}{360}\right)^{k-l}} \\
+& = \sum_{A \subsetneq \{1, ..., k\}, A \neq \emptyset}{\left(\frac{\alpha}{360}\right)^{|A|}} - \sum_{A \subsetneq \{1, ..., k\}, A \neq \emptyset}{\left(\frac{\alpha}{360}\right)^{|A|}\left(1 - \frac{\alpha}{360}\right)^{k-|A|}} \\
+& \leq \sum_{A \subset \{1, ..., k\}}{\left(\frac{\alpha}{360}\right)^{|A|}} - \sum_{A \subset \{1, ..., k\}}{\left(\frac{\alpha}{360}\right)^{|A|}\left(1 - \frac{\alpha}{360}\right)^{k-|A|}} \\
 & = \left(1 + \frac{\alpha}{360}\right)^{k} - 1
 \end{alignat*}
 
@@ -148,17 +139,17 @@ $$
 \textbf{2d} To sum up, we have shown that:
 
 \begin{alignat*}{3}
-Pr(h(p) = h(q)) & \geq 1 - \frac{\alpha}{360}\left(1 - \left(1 - \frac{\alpha}{360}\right)^k\right) & \text{ when } d(p, q) \leq 1\degree \\
+Pr(h(p) = h(q)) & \geq 2 - \left(1 + \frac{1}{360}\right)^k & \text{ when } d(p, q) \leq 1\degree \\
 Pr(h(p) = h(q)) & \leq \left(1 - \frac{2\alpha}{360}\right)^k + \left(1 + \frac{\alpha}{360}\right)^{k} -  1 & \text{ when } d(p, q) \geq 10\degree \\
 \end{alignat*}
 
-To conclude we have to find $\alpha \in [0, 10]$ and $k \geq 1$ such that $Pr(h(p) = h(q)) \geq 0.99$ and $Pr(h(p) = h(q)) \leq 0.95$.
+To conclude we have to find $\alpha \leq 10$ and $k \geq 1$ such that $Pr(h(p) = h(q)) \geq 0.99$ and $Pr(h(p) = h(q)) \leq 0.95$.
 
-If we take $\alpha = 10\degree$ and $k = 10$, we have that:
+If we take $\alpha = 10\degree$ and $k = 3$, we have that:
 
 \begin{alignat*}{1}
-1 - \frac{\alpha}{360}\left(1 - \left(1 - \frac{\alpha}{360}\right)^k\right) \approx 0.993 \\
-\left(1 - \frac{2\alpha}{360}\right)^k + \left(1 + \frac{\alpha}{360}\right)^{k} -  1 \approx 0.880 \\
+2 - \left(1 + \frac{1}{360}\right)^k \approx 0.992 \\
+\left(1 - \frac{2\alpha}{360}\right)^k + \left(1 + \frac{\alpha}{360}\right)^{k} -  1 \approx 0.928 \\
 \end{alignat*}
 
 \end{document}
