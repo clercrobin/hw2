@@ -54,7 +54,7 @@ There is at least one of those subsets with a value at least the expectation. It
 
 \textbf{2a} We suppose that the points are in $\mathbb{R}^2$ and that $\arg(p)$ is the angle in degrees of a point with respect to the $x$ axis.
 
-Let us define sets of angles of width $\alpha$ and offset $\theta$: $S_{\theta} = \{ \theta + \phi \mod 360, \phi \in [0, \alpha[ \}$.
+Let us define sets of angles of length $\alpha$ and offset $\theta$: $S_{\theta} = \{ \theta + \phi \mod 360, \phi \in [0, \alpha[ \}$.
 
 Let us define functions $h_{\theta}$ such that:
 
@@ -65,7 +65,7 @@ h_{\theta}(p) = \left\{\begin{array}{ll}
 \end{array}\right.
 $$
 
-Let $\mathcal{H}$ be the family generated when $\Theta \sim \mathcal{U}([0, 360[)$
+Let $\mathcal{H}$ be the family generated when $\theta \sim \mathcal{U}([0, 360[)$
 
 \textbf{2b} First let us find a lower bound on $Pr(h(p) = h(q))$ when $d(p, q) \leq 1\degree$.
 
@@ -89,26 +89,16 @@ $$
 
 \textbf{2c} Now let us find an upper bound on $Pr(h(p) = h(q))$ when $d(p, q) \geq 10\degree$.
 
-\begin{alignat*}{2}
-Pr(h(p) = h(q)) & = Pr(\{h(p) = 0, h(q) = 0\} \cup \{h(p) = 1, h(q) = 1\}) \\
-& = Pr(h(p) = 0, h(q) = 0) + Pr(h(p) = 1, h(q) = 1)
-\end{alignat*}
-
-If $\alpha \leq 10$:
-
-\begin{alignat*}{2}
-Pr(h(p) = 0, h(q) = 0) & = Pr(\Theta \not \in ]\arg(p)-\alpha, \arg(p)] \cup ]\arg(q)-\alpha, \arg(q)]) \\
-& = 1 - Pr(\Theta \in ]\arg(p)-\alpha, \arg(p)] \cup ]\arg(q)-\alpha, \arg(q)]) \\
-& = 1 - (Pr(\Theta \in ]\arg(p)-\alpha, \arg(p)]) + Pr(\Theta_i \in ]\arg(q)-\alpha, \arg(q)])) \\
-& = 1 - \frac{2\alpha}{360}
-\end{alignat*}
-
-Then, let us remark that $Pr(h(p) = 1, h(q) = 1)) = 0$ when $\alpha \leq 10$.
-
-Hence:
+If $\alpha \leq 10$, then we can not have $\arg(p) \in S_{\theta}$ and $\arg(q) \in S_{\theta}$ at the same time. So $Pr(h(q) = 0 | h(p) = 1) = 1$ hence:
 
 $$
-Pr(h(p) = h(q)) \leq 1 - \frac{2\alpha}{360}
+Pr(h(p) \neq h(q)) = 2Pr(h(p) = 1, h(q) = 0) = 2Pr(h(p) = 1) = \frac{2\alpha}{360}
+$$
+
+Thus:
+
+$$
+Pr(h(p) = h(q)) = 1 - \frac{2\alpha}{360}
 $$
 
 \textbf{2d} To conclude we have to find $\alpha \leq 10$ such that $1 - \frac{2\alpha}{360} \leq 0.95$.
