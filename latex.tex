@@ -26,25 +26,23 @@
 
 \section{Randomized analysis}
 
-\textbf{1a} Each vertex is removed with probability $1 - \frac{1}{d}$, thus remains with probability $\frac{1}{d}$
+\textbf{1a} Each vertex is removed with probability $1 - \frac{1}{d}$, thus remains with probability $\frac{1}{d}$.
 
-Let us define for each $V$ :
+Let us define for each $v \in V$, $X_v = \mathds{1}_{v\text{ remains}}$.
+
+Let $N_V = \sum_{v \in V}{X_v}$ be the number of remaining vertices. Then, we immediately have:
+
 $$
-h_{V}(p) = \left\{\begin{array}{ll}
-1 & \text{ if } p < \frac{1}{d} \\
-0 & \text{ otherwise}
-\end{array}\right.
+\mathbb{E}(N_V) = \sum_{v \in V}{\mathbb{E}(X_v)} = n Pr(v \text{ remains}) = \frac{n}{d}
 $$
 
-Let $N_V$ the number of remaining vertices we have immediately $\mathbb{E}(N_V) = \sum_{V=1}^{n} {\mathbb{E}_{p \sim \mathcal{U}[0, 1]}(h_{V})} = n \times {\mathbb{E}_{p \sim \mathcal{U}[0, 1]}(h_{V})} = \frac{n}{d}$
+Let us define for each $e \in E$, $Y_e = \mathds{1}_{e\text{ remains}}$. But an edge remains if and only if the two vertices it connects remain so for each $e = (u, v)$, $Y_e = X_uX_v$.
 
-Let $N_E$ the number of remaining edges. An edge remains if and only if the two vertices it connects remain.
+Let $N_E = \sum_{e \in E}{Y_e}$ be the number of remaining edges. 
 
-For each $E$ linked to the two edges $V_1$ and $V_2$ we thus have by independance: 
+We have by independence of the $(X_v)_{v \in V}$ that $\mathbb{E}(Y_e) = \mathbb{E}(X_u) \mathbb{E}(X_v) = \frac{1}{d^2}$.
 
-$\mathbb{E}(h_E) = \mathbb{E}(h_{V_1}) * \mathbb{E}(h_{V_2}) =\frac{1}{d^2} $
-
-Thus we have $\mathbb{E}(N_E) = \frac{n \times d}{2} \times \mathbb{E}(h_E) =\frac{n \times d}{2} \times \frac{1}{d^2} =  \frac{n}{2d}$
+Thus we have $\mathbb{E}(N_E) = \frac{n \times d}{2} \times \mathbb{E}(Y_e) =\frac{n \times d}{2} \times \frac{1}{d^2} = \frac{n}{2d}$
 
 \textbf{2a} Let us consider the graph composed of the remaining vertices and edges from the previous question. It is composed in expectation of $\frac{n}{d}$ vertices and $\frac{n}{2d}$ edges.
 
